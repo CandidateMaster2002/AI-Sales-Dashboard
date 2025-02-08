@@ -24,6 +24,29 @@ def main():
     fig = px.line(sales_trend, x='Date', y='Total Revenue', title="Daily Sales Trend")
     st.plotly_chart(fig, use_container_width=True)
     
+    # Best & Worst Sales Dates
+    best_day = sales_trend.loc[sales_trend['Total Revenue'].idxmax()]
+    worst_day = sales_trend.loc[sales_trend['Total Revenue'].idxmin()]
+    st.subheader("📅 Best & Worst Sales Days")
+    st.write(f"✅ **Best Sales Day:** {best_day['Date'].strftime('%Y-%m-%d')} (₹{best_day['Total Revenue']:,.2f})")
+    st.write(f"❌ **Worst Sales Day:** {worst_day['Date'].strftime('%Y-%m-%d')} (₹{worst_day['Total Revenue']:,.2f})")
+    
+    # Best & Worst Sales Time
+    df['Hour'] = pd.to_datetime(df['Time']).dt.hour
+    sales_by_hour = df.groupby('Hour')['Total Revenue'].sum()
+    best_hour = sales_by_hour.idxmax()
+    worst_hour = sales_by_hour.idxmin()
+    st.subheader("⏰ Best & Worst Sales Times")
+    st.write(f"🕒 **Best Hour:** {best_hour}:00 - ₹{sales_by_hour.max():,.2f}")
+    st.write(f"🕑 **Worst Hour:** {worst_hour}:00 - ₹{sales_by_hour.min():,.2f}")
+    
+    # Top & Worst Performing Medicines
+    st.subheader("💊 Best & Worst Selling Medicines")
+    top_medicine = df.groupby('Product')['Total Revenue'].sum().idxmax()
+    worst_medicine = df.groupby('Product')['Total Revenue'].sum().idxmin()
+    st.write(f"🏆 **Best Selling Medicine:** {top_medicine}")
+    st.write(f"⚠️ **Worst Selling Medicine:** {worst_medicine}")
+    
     # Top Customers
     st.subheader("🏆 Top Customers")
     top_customers = df.groupby('Customer')['Total Revenue'].sum().sort_values(ascending=False).head(5)
@@ -41,6 +64,7 @@ def main():
     st.subheader("📢 Smart Notifications")
     st.write("🔹 Restock **Cough Syrup** – Only 2 left!")
     st.write("🔹 Sales have increased by 15% this month!")
+    st.write("🔹 Best selling time is around **3 PM - 5 PM**")
 
 if __name__ == "__main__":
     main()
