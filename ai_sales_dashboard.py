@@ -31,14 +31,18 @@ def main():
     st.write(f"✅ **Best Sales Day:** {best_day['Date'].strftime('%Y-%m-%d')} (₹{best_day['Total Revenue']:,.2f})")
     st.write(f"❌ **Worst Sales Day:** {worst_day['Date'].strftime('%Y-%m-%d')} (₹{worst_day['Total Revenue']:,.2f})")
     
-    # Best & Worst Sales Time
-    df['Hour'] = pd.to_datetime(df['Time']).dt.hour
-    sales_by_hour = df.groupby('Hour')['Total Revenue'].sum()
-    best_hour = sales_by_hour.idxmax()
-    worst_hour = sales_by_hour.idxmin()
-    st.subheader("⏰ Best & Worst Sales Times")
-    st.write(f"🕒 **Best Hour:** {best_hour}:00 - ₹{sales_by_hour.max():,.2f}")
-    st.write(f"🕑 **Worst Hour:** {worst_hour}:00 - ₹{sales_by_hour.min():,.2f}")
+    # Best & Worst Sales Time (Check if 'Time' column exists)
+    if 'Time' in df.columns:
+        df['Hour'] = pd.to_datetime(df['Time'], errors='coerce').dt.hour
+        sales_by_hour = df.groupby('Hour')['Total Revenue'].sum()
+        best_hour = sales_by_hour.idxmax()
+        worst_hour = sales_by_hour.idxmin()
+        
+        st.subheader("⏰ Best & Worst Sales Times")
+        st.write(f"🕒 **Best Hour:** {best_hour}:00 - ₹{sales_by_hour.max():,.2f}")
+        st.write(f"🕑 **Worst Hour:** {worst_hour}:00 - ₹{sales_by_hour.min():,.2f}")
+    else:
+        st.warning("⚠️ 'Time' column is missing. Cannot calculate best/worst sales time.")
     
     # Top & Worst Performing Medicines
     st.subheader("💊 Best & Worst Selling Medicines")
